@@ -4936,6 +4936,8 @@ static struct PyModuleDef moduledef = {
         NULL
 };
 
+PyObject *G_mod = NULL;
+
 /* Initialization function for the module */
 PyMODINIT_FUNC PyInit__multiarray_umath(void) {
     PyObject *m, *d, *s;
@@ -5006,7 +5008,7 @@ PyMODINIT_FUNC PyInit__multiarray_umath(void) {
     }
 
     initialize_casting_tables();
-    initialize_numeric_types();
+    initialize_numeric_types(m);
 
     if (initscalarmath(m) < 0) {
         goto err;
@@ -5245,6 +5247,7 @@ PyMODINIT_FUNC PyInit__multiarray_umath(void) {
         goto err;
     }
 
+    G_mod = m;
     return m;
 
  err:

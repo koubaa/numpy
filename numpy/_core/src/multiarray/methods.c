@@ -1003,7 +1003,7 @@ array_getarray(PyArrayObject *self, PyObject *args, PyObject *kwds)
  * actual overrides are not needed and one can stop looking once one is found.
  */
 static int
-any_array_ufunc_overrides(PyObject *args, PyObject *kwds)
+any_array_ufunc_overrides(PyObject *mod, PyObject *args, PyObject *kwds)
 {
     int i;
     int nin, nout;
@@ -1022,7 +1022,7 @@ any_array_ufunc_overrides(PyObject *args, PyObject *kwds)
     }
     in_objs = PySequence_Fast_ITEMS(fast);
     for (i = 0; i < nin; ++i) {
-        if (PyUFunc_HasOverride(in_objs[i])) {
+        if (PyUFunc_HasOverride(mod, in_objs[i])) {
             Py_DECREF(fast);
             return 1;
         }
@@ -1037,7 +1037,7 @@ any_array_ufunc_overrides(PyObject *args, PyObject *kwds)
         return -1;
     }
     for (i = 0; i < nout; i++) {
-        if (PyUFunc_HasOverride(out_objs[i])) {
+        if (PyUFunc_HasOverride(mod, out_objs[i])) {
             Py_DECREF(out_kwd_obj);
             return 1;
         }
@@ -1050,7 +1050,7 @@ any_array_ufunc_overrides(PyObject *args, PyObject *kwds)
             return -1;
         }
     } else {
-        if (PyUFunc_HasOverride(where_obj)){
+        if (PyUFunc_HasOverride(mod, where_obj)){
             return 1;
         }
     }
@@ -1059,7 +1059,7 @@ any_array_ufunc_overrides(PyObject *args, PyObject *kwds)
 
 
 NPY_NO_EXPORT PyObject *
-array_ufunc(PyArrayObject *NPY_UNUSED(self), PyObject *args, PyObject *kwds)
+array_ufunc(PyArrayObject *self, PyObject *args, PyObject *kwds)
 {
     PyObject *ufunc, *method_name, *normal_args, *ufunc_method;
     PyObject *result = NULL;
@@ -1077,8 +1077,13 @@ array_ufunc(PyArrayObject *NPY_UNUSED(self), PyObject *args, PyObject *kwds)
     if (normal_args == NULL) {
         return NULL;
     }
+
+    PyObject *mod = PyType_GetModule(Py_TYPE(self));
+    if (mod == NULL) {
+        return NULL;
+    }
     /* ndarray cannot handle overrides itself */
-    has_override = any_array_ufunc_overrides(normal_args, kwds);
+    has_override = any_array_ufunc_overrides(mod, normal_args, kwds);
     if (has_override < 0) {
         goto cleanup;
     }

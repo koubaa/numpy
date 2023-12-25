@@ -12,7 +12,7 @@
  * exists and is different from that of ndarray, and NULL otherwise.
  */
 NPY_NO_EXPORT PyObject *
-PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *obj);
+PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *mod, PyObject *obj);
 
 /*
  * Check whether an object has __array_ufunc__ defined on its class and it
@@ -22,7 +22,7 @@ PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *obj);
  * Returns 1 if this is the case, 0 if not.
  */
 NPY_NO_EXPORT int
-PyUFunc_HasOverride(PyObject *obj);
+PyUFunc_HasOverride(PyObject *mod, PyObject *obj);
 
 /*
  * Get possible out argument from kwds, and returns the number of outputs

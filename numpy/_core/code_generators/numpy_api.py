@@ -5,7 +5,7 @@ Each dictionary contains name -> index pair.
 
 Whenever you change one index, you break the ABI (and the ABI version number
 should be incremented). Whenever you add an item to one of the dict, the API
-needs to be updated in both numpy/core/meson.build and by adding an appropriate
+needs to be updated in both numpy/_core/meson.build and by adding an appropriate
 entry to cversion.txt (generate the hash via "python cversions.py").
 
 When adding a function, make sure to use the next integer not used as an index
@@ -405,6 +405,7 @@ multiarray_funcs_api = {
     # `PyDataType_GetArrFuncs` checks for the NumPy runtime version.
     '_PyDataType_GetArrFuncs':                       (365,),
     # End 2.0 API
+    'PyBoolArrType_GetType':                         (366, MinVersion("2.1")),
 }
 
 ufunc_types_api = {

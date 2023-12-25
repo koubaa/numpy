@@ -18,13 +18,13 @@ NPY_NO_EXPORT void
 initialize_casting_tables(void);
 
 NPY_NO_EXPORT void
-initialize_numeric_types(void);
+initialize_numeric_types(PyObject* mod);
 
 NPY_NO_EXPORT void
 gentype_struct_free(PyObject *ptr);
 
 NPY_NO_EXPORT int
-is_anyscalar_exact(PyObject *obj);
+is_anyscalar_exact(PyObject* mod, PyObject *obj);
 
 NPY_NO_EXPORT int
 _typenum_fromtypeobj(PyObject *type, int user);

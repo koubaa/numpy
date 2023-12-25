@@ -17,7 +17,7 @@
  * exists and is different from that of ndarray, and NULL otherwise.
  */
 NPY_NO_EXPORT PyObject *
-PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *obj)
+PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *mod, PyObject *obj)
 {
     static PyObject *ndarray_array_ufunc = NULL;
     PyObject *cls_array_ufunc;
@@ -33,7 +33,7 @@ PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *obj)
         return NULL;
     }
    /* Fast return for numpy scalar types */
-    if (is_anyscalar_exact(obj)) {
+    if (is_anyscalar_exact(mod, obj)) {
         return NULL;
     }
 
@@ -65,9 +65,9 @@ PyUFuncOverride_GetNonDefaultArrayUfunc(PyObject *obj)
  */
 
 NPY_NO_EXPORT int
-PyUFunc_HasOverride(PyObject * obj)
+PyUFunc_HasOverride(PyObject *mod, PyObject *obj)
 {
-    PyObject *method = PyUFuncOverride_GetNonDefaultArrayUfunc(obj);
+    PyObject *method = PyUFuncOverride_GetNonDefaultArrayUfunc(mod, obj);
     if (method) {
         Py_DECREF(method);
         return 1;

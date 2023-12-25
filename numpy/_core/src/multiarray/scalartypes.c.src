@@ -4074,7 +4074,7 @@ static void init_basetypes(void);
 
 
 NPY_NO_EXPORT void
-initialize_numeric_types(void)
+initialize_numeric_types(PyObject *m)
 {
     init_basetypes();
     PyGenericArrType_Type.tp_dealloc = (destructor)gentype_dealloc;
@@ -4150,12 +4150,17 @@ initialize_numeric_types(void)
 
     /**end repeat**/
 
+    PyBoolArrType_Type.tp_flags = BASEFLAGS;
+    PyBoolArrType_Type.tp_new = bool_arrtype_new;
+    PyBoolArrType_Type.tp_richcompare = gentype_richcompare;
+    PyBoolArrType_Type.tp_as_buffer = &bool_arrtype_as_buffer;
+
     /**begin repeat
-     * #name = bool, byte, short, int, long, longlong, ubyte, ushort, uint,
+     * #name = byte, short, int, long, longlong, ubyte, ushort, uint,
      *         ulong, ulonglong, half, float, double, longdouble, cfloat,
      *         cdouble, clongdouble, string, unicode, void, object, datetime,
      *         timedelta#
-     * #NAME = Bool, Byte, Short, Int, Long, LongLong, UByte, UShort, UInt,
+     * #NAME = Byte, Short, Int, Long, LongLong, UByte, UShort, UInt,
      *         ULong, ULongLong, Half, Float, Double, LongDouble, CFloat,
      *         CDouble, CLongDouble, String, Unicode, Void, Object, Datetime,
      *         Timedelta#
@@ -4175,11 +4180,13 @@ initialize_numeric_types(void)
 
     PyUnicodeArrType_Type.tp_dealloc = unicode_arrtype_dealloc;
 
+    PyBoolArrType_Type.tp_hash = bool_arrtype_hash;
+
     /**begin repeat
-     * #name = bool, byte, short, ubyte, ushort, uint, ulong, ulonglong,
+     * #name = byte, short, ubyte, ushort, uint, ulong, ulonglong,
      *         half, float, longdouble, cfloat, clongdouble, void, object,
      *         datetime, timedelta#
-     * #NAME = Bool, Byte, Short, UByte, UShort, UInt, ULong, ULongLong,
+     * #NAME = Byte, Short, UByte, UShort, UInt, ULong, ULongLong,
      *         Half, Float, LongDouble, CFloat, CLongDouble, Void, Object,
      *         Datetime, Timedelta#
      */
@@ -4326,6 +4333,21 @@ static scalar_type typeobjects[] = {
     {&PyHalfArrType_Type, NPY_HALF}
 };
 
+/*NUMPY_API
+ * Given an instance of the multiarray module
+ * Return the PyTypeObject of PyBoolArrType_Type.
+ *
+ * Returns NULL if an error occurs.
+ */
+NPY_NO_EXPORT PyTypeObject *
+PyBoolArrType_GetType(PyObject *module)
+{
+    return &PyBoolArrType_Type;
+    //multiarray_umath_state *state = multiarray_umath_get_state(module);
+    //assert(state != NULL);
+    //return state->arrayflags_type;
+}
+
 static int compare_types(const void * a_, const void * b_)
 {
     const PyTypeObject * a = ((const scalar_type *)a_)->type;
@@ -4369,7 +4391,7 @@ get_typeobj_idx(PyTypeObject * obj)
 }
 
 NPY_NO_EXPORT int
-is_anyscalar_exact(PyObject *obj)
+is_anyscalar_exact(PyObject *mod, PyObject *obj)
 {
     return get_typeobj_idx(Py_TYPE(obj)) >= 0;
 }

@@ -110,6 +110,8 @@ scalar_value(PyObject *scalar, PyArray_Descr *descr)
     return (void *)memloc;
 }
 
+extern PyObject *G_mod;
+
 /*NUMPY_API
  * return 1 if an object is exactly a numpy scalar
  */
@@ -122,7 +124,7 @@ PyArray_CheckAnyScalarExact(PyObject * obj)
         return 0;
     }
 
-    return is_anyscalar_exact(obj);
+    return is_anyscalar_exact(G_mod, obj);
 }
 
 /*NUMPY_API

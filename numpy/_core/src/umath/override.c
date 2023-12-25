@@ -8,7 +8,7 @@
 #include "override.h"
 #include "ufunc_override.h"
 
-
+extern PyObject *G_mod;
 /*
  * For each positional argument and each argument in a possible "out"
  * keyword, look for overrides of the standard ufunc behaviour, i.e.,
@@ -64,7 +64,7 @@ get_array_ufunc_overrides(PyObject *in_args, PyObject *out_args, PyObject *where
              * ignore the base ndarray.__ufunc__, so we skip any ndarray as well as
              * any ndarray subclass instances that did not override __array_ufunc__.
              */
-            PyObject *method = PyUFuncOverride_GetNonDefaultArrayUfunc(obj);
+            PyObject *method = PyUFuncOverride_GetNonDefaultArrayUfunc(G_mod, obj);
             if (method == NULL) {
                 continue;
             }
