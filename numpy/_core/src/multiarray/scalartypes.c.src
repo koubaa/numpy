@@ -51,6 +51,22 @@ npy_alloc_cache_zero(size_t nmemb, size_t size);
 NPY_NO_EXPORT void
 npy_free_cache(void * p, npy_uintp sz);
 
+// TODO - Used for the global PyObject* PyArrayScalar_False and PyArrayScalar_True.
+//        This seems to be exposed on the interface of the API, though its possible
+//        To impelement True/False as heap types. Plan: leave this struct alone and
+//        Provide True/False from the first module initialization.
+//        Look into immortal objects for heap types. bool might need to use that,
+//        Since only two are possible, true and false.
+//        These are singletons, which are technically shared between interpreters, 
+//        Make them immortal via https://peps.python.org/pep-0683/
+//        According to PEP683 user-defined objects cannot be marked as immortal
+//        These aren't "really" part of the public API, it is only used in return
+//        values of numpy functions that have to incref the object and then immediately
+//        return it. Those places can just return the module-state-specific instances
+//        as there will be one true and one false value per module. See all uses of
+//        PyArrayScalar_RETURN_FALSE and PyArrayScalar_RETURN_TRUE
+
+/* Still here to fill the API slot */
 NPY_NO_EXPORT PyBoolScalarObject _PyArrayScalar_BoolValues[] = {
     {PyObject_HEAD_INIT(&PyBoolArrType_Type) 0},
     {PyObject_HEAD_INIT(&PyBoolArrType_Type) 1},
